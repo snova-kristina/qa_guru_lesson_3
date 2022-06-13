@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 
 import java.io.File;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.files.DownloadActions.click;
@@ -17,49 +18,75 @@ public class StudentRegistrationFormTests {
 
 	@BeforeAll
 	static void SetUp() {
-		Configuration.holdBrowserOpen = true;
+		Configuration.holdBrowserOpen = false;
 		Configuration.baseUrl = "https://demoqa.com";
-		Configuration.browserSize = "1438x870";
+		Configuration.browserSize = "1920x1080";
 
 	}
+
+	String firstname = "Elon";
+	String lastname = "Musk";
+	String email = "elonmusk@spacex.com";
+	String mobile = "7900123456";
+	String address = "Hawthorne, California, USA";
+	String gender = "Other";
+	String state = "Uttar Pradesh";
+	String city = "Agra";
+	//String imgPath = "/home/rudik/IdeaProjects/qa_guru_lesson_3/src/resources/test.png";
 
 	@Test
 	void FillRegistrationForm() {
 		open("/automation-practice-form");
 
-		String firstname = "Elon";
-		String lastname = "Musk";
-		String email = "elonmusk@spacex.com";
-		String mobile = "7900123456";
-		String address = "Hawthorne, California, USA";
+		// Selenide.zoom(0.65);
+		// executeJavaScript("document.querySelector(\"footer\").hidden = 'true';document.querySelector(\"#fixedban\").hidden = 'true'");-удаление футера
+		// executeJavaScript("$('footer').remove()");
+		// executeJavaScript("$('#fixedban').remove()"); - еще вариант убрать футер и баннер рекламы
 
+		$("#firstName").setValue(firstname);
+		$("#lastName").setValue(lastname);
+		$("#userEmail").setValue(email);
+		$("#currentAddress").setValue(address);
+		$("#genterWrapper").$(byText(gender)).click();
+		$("#userNumber").setValue(mobile);
 
-		$("[id=firstName]").setValue(firstname);
-		$("[id=lastName]").setValue(lastname);
-		$("[id=userEmail]").setValue(email);
-		$("[id=currentAddress]").setValue(address);
-		$(byText("Other")).click();
-		$("[id=userNumber]").setValue(mobile);
+		//Start of Birthday block
+		$("#dateOfBirthInput").click();
+		$(".react-datepicker__month-select").selectOption("April");
+		$(".react-datepicker__year-select").selectOption("1995");
+		$("[aria-label$='April 9th, 1995']").click();
+		//End of Birthday block
 
-		$(By.cssSelector("[id=dateOfBirthInput]")).click();
-		$(By.className("react-datepicker__month-select")).click();
-		$(byText("April")).click();
-		$(By.className("react-datepicker__year-select")).click();
-		$(byText("1995")).click();
-		$("[class=react-datepicker__year-select]").click();
-		$("[id=userForm]").click();
-
-		$("[id=subjectsContainer]").click();
-		$("[id=subjectsInput]").setValue("E");
-		$(byText("English")).click();
+		$("#subjectsInput").setValue("E");
+		$(byText("English")).click(); // или так, короче на строку $("#subjectsInput").setValue("History").pressEnter();
 		$(byText("Music")).click();
 
-		File file = $("#uploadPicture").uploadFile(new File("src/test/java/com/demoqa/test.png"));
-		$("#stateCity-wrapper .css-2b097c-container").click();
-		$(byText("Uttar Pradesh")).click();
-		$("#stateCity-wrapper .css-1wa3eu0-placeholder").click();
-		$(byText("Agra")).click();
+		File file = $("#uploadPicture").uploadFile(new File("/home/rudik/IdeaProjects/qa_guru_lesson_3/src/resources/test.png"));
+		//$("input#uploadPicture").uploadFromClasspath("test.png");
+		//$("#uploadPicture").uploadFromClasspath(imgPath);
 
-		$(byText("Submit")).click();
+		$("#state").click();
+		$(byText(state)).click(); //  $("#react-select-3-input").setValue(state).pressEnter();
+		$("#city").click();
+		$(byText(city)).click();
+
+		$("#submit").pressEnter();
+
+		//Asserts
+		$("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
+		// .parent().shouldHave(text(firstname + lastname));
+
+		//$(".table-responsive").$(byText("Student Name")).parent().shouldHave(text(firstname + " " + lastname));
+		$(".table-responsive").shouldHave(
+				text(firstname + " " + lastname),
+				text(email),
+				text(gender),
+				text(mobile),
+				text("09 April,1995"),
+				text("English"),
+				text("Music"),
+				text("test.png"),
+				text(address),
+				text(state + " " + city));
 	}
 }
