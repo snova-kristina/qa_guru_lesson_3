@@ -7,8 +7,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 
+import java.io.File;
+
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.files.DownloadActions.click;
 
 public class StudentRegistrationFormTests {
 
@@ -16,13 +19,13 @@ public class StudentRegistrationFormTests {
 	static void SetUp() {
 		Configuration.holdBrowserOpen = true;
 		Configuration.baseUrl = "https://demoqa.com";
-		Configuration.browserSize = "1600x1800";
+		Configuration.browserSize = "1438x870";
 
 	}
 
 	@Test
 	void FillRegistrationForm() {
-		Selenide.open("/automation-practice-form");
+		open("/automation-practice-form");
 
 		String firstname = "Elon";
 		String lastname = "Musk";
@@ -30,11 +33,6 @@ public class StudentRegistrationFormTests {
 		String mobile = "7900123456";
 		String address = "Hawthorne, California, USA";
 
-		$("#stateCity-wrapper .css-2b097c-container").click();
-		$(byText("Uttar Pradesh")).click();
-
-		$("#stateCity-wrapper .css-1wa3eu0-placeholder").click();
-		$(byText("Agra")).click();
 
 		$("[id=firstName]").setValue(firstname);
 		$("[id=lastName]").setValue(lastname);
@@ -43,17 +41,25 @@ public class StudentRegistrationFormTests {
 		$(byText("Other")).click();
 		$("[id=userNumber]").setValue(mobile);
 
-		$("[id=subjectsContainer]").click();
-		$("[id=subjectsInput]").setValue("E");
-		$(byText("English")).click();
-		$(byText("Music")).click();
-
 		$(By.cssSelector("[id=dateOfBirthInput]")).click();
 		$(By.className("react-datepicker__month-select")).click();
 		$(byText("April")).click();
 		$(By.className("react-datepicker__year-select")).click();
 		$(byText("1995")).click();
+		$("[class=react-datepicker__year-select]").click();
+		$("[id=userForm]").click();
 
-		$(By.className("btn btn-primary")).click();
+		$("[id=subjectsContainer]").click();
+		$("[id=subjectsInput]").setValue("E");
+		$(byText("English")).click();
+		$(byText("Music")).click();
+
+		File file = $("#uploadPicture").uploadFile(new File("src/test/java/com/demoqa/test.png"));
+		$("#stateCity-wrapper .css-2b097c-container").click();
+		$(byText("Uttar Pradesh")).click();
+		$("#stateCity-wrapper .css-1wa3eu0-placeholder").click();
+		$(byText("Agra")).click();
+
+		$(byText("Submit")).click();
 	}
 }
